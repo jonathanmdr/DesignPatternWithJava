@@ -1,10 +1,10 @@
 package br.com.designpattern.abstractfactory;
 
-import br.com.designpattern.abstractfactory.operator.Cielo;
 import br.com.designpattern.abstractfactory.operator.TransactionUnauthorizedException;
-import br.com.designpattern.abstractfactory.payment.PaymentPagSeguro;
+import br.com.designpattern.abstractfactory.payment.Payment;
+import br.com.designpattern.abstractfactory.payment.PaymentFactory;
+import br.com.designpattern.abstractfactory.payment.paypal.PayPalPaymentFactory;
 import br.com.designpattern.abstractfactory.riskmanager.AlertRiskException;
-import br.com.designpattern.abstractfactory.riskmanager.FControl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,15 +13,14 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class PaymentPagSeguroTest {
+public class PayPalPaymentTest {
 
-    private static PaymentPagSeguro subject;
+    private static Payment subject;
 
     @BeforeAll
     public static void setup() {
-        Cielo cielo = new Cielo();
-        FControl fcontrol = new FControl();
-        subject = new PaymentPagSeguro(cielo, fcontrol);
+        PaymentFactory paymentFactory = new PayPalPaymentFactory();
+        subject = new Payment(paymentFactory);
     }
 
     @Test
@@ -31,18 +30,24 @@ public class PaymentPagSeguroTest {
     }
 
     @Test
-    public void givenAInvalidCard_whenAuthorizeSell_shouldBeThrownTransactionUnauthorizedException() {
+    public void givenAExceededLimitCard_whenAuthorizeSell_shouldBeThrownTransactionUnauthorizedException() {
         Assertions.assertThrows(
                 TransactionUnauthorizedException.class,
-                () -> subject.authorize("5555.2222", new BigDecimal("2000"))
+                () -> subject.authorize("2222.2222", new BigDecimal("2000"))
         );
+    }
+
+    @Test
+    public void givenAValidCardWithHighLimit_whenAuthorizeSell_shouldBeAuthorizeSell() {
+        Long authorizationCode = subject.authorize("3333.2222", new BigDecimal("2000"));
+        assertNotNull(authorizationCode);
     }
 
     @Test
     public void givenASuspectedFraud_whenAuthorizeSell_shouldBeThrownAlertRiskException() {
         Assertions.assertThrows(
                 AlertRiskException.class,
-                () -> subject.authorize("7777.2222", new BigDecimal("5500"))
+                () -> subject.authorize("1111.2222", new BigDecimal("5500"))
         );
     }
 

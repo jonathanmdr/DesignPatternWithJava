@@ -1,20 +1,20 @@
 package br.com.designpattern.abstractfactory.payment;
 
-import br.com.designpattern.abstractfactory.operator.Cielo;
+import br.com.designpattern.abstractfactory.operator.Operator;
 import br.com.designpattern.abstractfactory.operator.TransactionUnauthorizedException;
 import br.com.designpattern.abstractfactory.riskmanager.AlertRiskException;
-import br.com.designpattern.abstractfactory.riskmanager.FControl;
+import br.com.designpattern.abstractfactory.riskmanager.RiskManager;
 
 import java.math.BigDecimal;
 
-public class PaymentPagSeguro {
+public class Payment {
 
-    private Cielo operator;
-    private FControl riskManager;
+    private Operator operator;
+    private RiskManager riskManager;
 
-    public PaymentPagSeguro(Cielo operator, FControl riskManager) {
-        this.operator = operator;
-        this.riskManager = riskManager;
+    public Payment(PaymentFactory paymentFactory) {
+        this.operator = paymentFactory.getOperatorInstance();
+        this.riskManager = paymentFactory.createRiskManagerInstance();
     }
 
     public Long authorize(String cardNumber, BigDecimal value) throws TransactionUnauthorizedException, AlertRiskException {
