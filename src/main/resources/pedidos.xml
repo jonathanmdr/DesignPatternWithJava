@@ -1,0 +1,14 @@
+<orders>
+    <order>
+        <description>Sabonete Líquido</description>
+        <value>5.39</value>
+    </order>
+    <order>
+        <description>Shampoo Anti-caspa</description>
+        <value>12.22</value>
+    </order>
+    <order>
+        <description>Pasta de Dente</description>
+        <value>9.66</value>
+    </order>
+</orders>
